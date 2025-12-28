@@ -1,0 +1,65 @@
+{% extends "lay.html" %}
+
+{% block title %}FAQ{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="part-heading left">
+                <h2 style="font-family: Inter, sans-serif; font-weight: bold; font-size: 36px;">FAQ</h2>
+                <h5 style="font-family: Inter, sans-serif;">Answers to some questions you might have.</h5>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="accordion" id="faqAccordion">
+                {% for faq in faqs %}
+                <div class="accordion-item border-0 mb-2" style="background-color: #f5fbf5;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button fw-bold shadow-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}" style="background-color: #f5fbf5;">
+                            {{ faq[0] }}
+                        </button>
+                    </h2>
+                    <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">{{ faq[1] }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #F4F2EC;
+    }
+    .part-heading.left {
+        text-align: left;
+    }
+    .part-heading {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5em;
+    }
+    .accordion-button {
+        color: #000;
+        background-color: hsl(104, 52%, 73%, 20%) !important;
+        font-weight: bold;
+        border-radius: 0;
+    }
+    .accordion-button::after {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23F16529' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M8 3.5a.5.5 0 0 1 .5.5v3.5H12a.5.5 0 0 1 0 1H8.5V12a.5.5 0 0 1-1 0V8.5H4a.5.5 0 0 1 0-1h3.5V4a.5.5 0 0 1 .5-.5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        width: 2rem;
+        height: 1rem;
+    }
+    .accordion-button:focus {
+        box-shadow: none;
+    }
+    .accordion-body {
+        background-color: hsl(104, 52%, 73%, 20%);
+        border-left: 2px solid #f5fbf5;
+    }
+</style>
+{% endblock %}

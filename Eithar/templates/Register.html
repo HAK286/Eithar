@@ -1,0 +1,458 @@
+{% extends 'lay.html' %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Alert Placeholder -->
+    <div id="alert-placeholder"></div>
+
+<div class="container" id="container">
+
+    <!-- Sign Up Form -->
+    <div class="form-container sign-up">
+        
+        <form id="signup-form" action="{{ url_for('signup') }}" method="POST">
+  
+      <!-- Full Name -->
+      <input type="text" id="full_name" name="Fullname" placeholder="Enter your full name" maxlength="25" pattern="^[a-zA-Z\s]+$" title="Only characters allowed and less than 25" required>
+
+      <!-- Email -->
+      <input type="email" id="signup_email" name="email" placeholder="Enter your email address" pattern="^[a-zA-Z0-9._%+-]+@(gmail\.com|icloud\.com|yahoo\.com|hotmail\.com)$" title="Email must be in the format: example@domain.com" required autocomplete="off">
+
+      <!-- National ID -->
+      <input type="text" id="id" name="id" placeholder="Enter your national ID" pattern="^\d{10}$" title="National ID must be exactly 10 digits" required>
+
+   <!-- Password -->
+<!-- Password -->
+<div class="input-container">
+    <input type="password" id="signup_password" name="password" placeholder="Enter a secure password" required>
+    <span id="toggle-signup-password" class="toggle-password">
+        <i class="fa fa-eye"></i>
+    </span>
+</div>
+<small style="margin-left: -120px; font-size: 10px; display: block; text-align: left;">
+    Password must be:
+    <ul style="text-align: left; list-style-type: disc;">
+        <li>At least 8 characters long</li>
+        <li>Include a capital and small letter</li>
+        <li>Include a number</li>
+        <li>Include a special character</li>
+    </ul>
+</small>
+
+<!-- Confirm Password -->
+<div class="input-container">
+    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+    <span id="toggle-confirm-password" class="toggle-password">
+        <i class="fa fa-eye"></i>
+    </span>
+</div>
+
+            <!-- Submit Button -->
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+
+    <!-- Sign In Form -->
+    <div class="form-container sign-in">
+        
+            <form id="sign-in-form" action="{{ url_for('signin') }}" method="POST">
+
+            <h1>Sign In</h1>
+
+            <!-- email -->
+            <input type="email" id="signin_email" name="email" placeholder="Enter your email address" pattern="^[a-zA-Z0-9._%+-]+@domain\.com$" title="Email must be in the format: example@domain.com" 
+            required autocomplete="off">
+
+            <!-- Password -->
+            <div class="input-container">
+            <input type="password" name="password" placeholder="Enter your password" required autocomplete="off">
+            <span id="toggle-signin-password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                <i class="fa fa-eye"></i>
+            </span>
+        </div>
+            <!-- Submit Button -->
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+
+    <!-- Toggle Container -->
+    <div class="toggle-container">
+        <div class="toggle">
+            <div class="toggle-panel toggle-left">
+                <h1>Welcome Back!</h1>
+                <p>Enter your personal details to access all features</p>
+                <button class="hidden" id="login">Sign In</button>
+            </div>
+            <div class="toggle-panel toggle-right">
+                <h1>Hello, Friend!</h1>
+                <p>Register with your details to use all site features</p>
+                <button class="hidden" id="register">Sign Up</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+body {
+    background-color: #F4F2EC;
+}
+
+.container {
+    background-color: #fff;
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    width: 768px;
+    max-width: 100%;
+    padding: 40px;
+    min-height: 480px;
+    position: relative;
+    top: -50px; /* المسافة العلوية */
+  
+    transform: translateX(-0%);
+    margin: 50px auto; /* تقليل المسافة العلوية والتمركز أفقيًا */
+}
+
+.container p {
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    margin: 20px 0;
+}
+.container span {
+    font-size: 12px;
+}
+.container a {
+    color: #00613a;
+    font-size: 13px;
+    text-decoration: none;
+    margin: 15px 0 10px;
+}
+
+.container button {
+    background-color: #e26d12;
+    color: #fff;
+    font-size: 14px;
+    padding: 12px 50px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.container button:hover {
+    background-color: #d25d10;
+}
+.container button.hidden {
+    background-color: transparent;
+    border-color: #fff;
+}
+.container form {
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    height: 100%;
+}
+.container input {
+    background-color: #f3f3f3;
+    border: none;
+    margin: 8px 0;
+    padding: 12px 15px;
+    font-size: 14px;
+    border-radius: 10px;
+    width: 100%;
+    outline: none;
+    transition: border 0.3s ease;
+}
+.container input:focus {
+    border: 2px solid #E26D12;
+}
+.form-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    transition: all 0.6s ease-in-out;
+}
+.sign-in {
+    left: 0;
+    width: 50%;
+    z-index: 2;
+}
+.container.active .sign-in {
+    transform: translateX(100%);
+}
+.sign-up {
+    left: 0;
+    width: 50%;
+    opacity: 0;
+    z-index: 1;
+}
+.container.active .sign-up {
+    transform: translateX(100%);
+    opacity: 1;
+    z-index: 5;
+    animation: move 0.65s;
+}
+@keyframes move {
+    0%, 49.99% {
+        opacity: 0;
+        z-index: 1;
+    }
+    50%, 100% {
+        opacity: 1;
+        z-index: 5;
+    }
+}
+.toggle-container {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: all 0.6s ease-in-out;
+    border-radius: 150px 0 0 150px;
+    z-index: 1000;
+}
+.container.active .toggle-container {
+    transform: translateX(-100%);
+    border-radius: 0 150px 150px 0;
+}
+.toggle {
+    background-color: #00613a;
+    height: 100%;
+    background: linear-gradient(to right, #4CAF50, #00613a);
+    color: #fff;
+    position: relative;
+    left: -100%;
+    height: 100%;
+    width: 200%;
+    transform: translateX(0);
+    transition: all 0.6s ease-in-out;
+}
+.container.active .toggle {
+    transform: translateX(50%);
+}
+.toggle-panel {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 30px;
+    text-align: center;
+    top: 0;
+    transform: translateX(0);
+    transition: all 0.6s ease-in-out;
+}
+.toggle-left {
+    transform: translateX(-200%);
+}
+.container.active .toggle-left {
+    transform: translateX(0);
+}
+.toggle-right {
+    right: 0;
+    transform: translateX(0);
+}
+.container.active .toggle-right {
+    transform: translateX(200%);
+}
+/* Style for input containers */
+.input-container {
+    position: relative;
+    width: 100%; /* Ensure the container takes full width */
+    margin: 4px 0; /* Match the margin of other input fields */
+}
+
+/* Style for input fields */
+.input-container input {
+    width: 100%; /* Ensure the input field takes full width */
+    padding: 12px 40px 12px 15px; /* Add padding to the right for the icon */
+    font-size: 14px;
+    border-radius: 10px;
+    border: none;
+    background-color: #f3f3f3;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+.input-container input:focus {
+    border: 2px solid #E26D12;
+}
+
+/* Style for toggle password icons */
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666; /* Adjust icon color */
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+   
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('container');
+        const registerBtn = document.getElementById('register');
+        const loginBtn = document.getElementById('login');
+        const navbarSignup = document.getElementById('navbar-signup');
+    
+        console.log('Page loaded');
+    
+        if (registerBtn) {
+            registerBtn.addEventListener('click', () => {
+                console.log('Register button clicked');
+                container.classList.add('active');
+            });
+        }
+    
+        if (loginBtn) {
+            loginBtn.addEventListener('click', () => {
+                console.log('Login button clicked');
+                container.classList.remove('active');
+            });
+        }
+    
+        if (navbarSignup) {
+            navbarSignup.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Navbar signup button clicked');
+                registerBtn.click();
+            });
+        }
+    
+        const signupForm = document.getElementById('signup-form');
+    
+        if (signupForm) {
+            signupForm.reset();
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log('Signup form submitted');
+                if (await validateSignupForm()) {
+                    signupForm.submit();
+                }
+            });
+        }
+
+            // Toggle Password Visibility for Sign Up Form
+    document.getElementById("toggle-signup-password").addEventListener("click", function () {
+        const passwordField = document.getElementById("signup_password");
+        const toggleIcon = this.querySelector("i");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            toggleIcon.classList.remove("fa-eye");
+            toggleIcon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            toggleIcon.classList.remove("fa-eye-slash");
+            toggleIcon.classList.add("fa-eye");
+        }
+    });
+
+    document.getElementById("toggle-confirm-password").addEventListener("click", function () {
+        const passwordField = document.getElementById("confirm_password");
+        const toggleIcon = this.querySelector("i");
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            toggleIcon.classList.remove("fa-eye");
+            toggleIcon.classList.add("fa-eye-slash");
+        } else {
+            passwordField.type = "password";
+            toggleIcon.classList.remove("fa-eye-slash");
+            toggleIcon.classList.add("fa-eye");
+        }
+    });
+
+    // Toggle Password Visibility for Sign In Form
+    document.getElementById("toggle-signin-password").addEventListener("click", function () {
+    const passwordField = document.querySelector("#sign-in-form input[name='password']"); // Use name or ID
+    const toggleIcon = this.querySelector("i");
+
+    if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleIcon.classList.remove("fa-eye");
+        toggleIcon.classList.add("fa-eye-slash");
+    } else {
+        passwordField.type = "password";
+        toggleIcon.classList.remove("fa-eye-slash");
+        toggleIcon.classList.add("fa-eye");
+    }
+});
+    
+        async function validateSignupForm() {
+            const email = document.getElementById('signup_email').value;
+            const id = document.getElementById('id').value;
+            const password = document.getElementById('signup_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+    
+            // Check for duplicate ID
+            let response = await fetch(`/check_id/${id}`);
+            let data = await response.json();
+            if (data.exists) {
+                showAlert('The ID you entered is already used. Please use a different ID.', 'danger');
+                return false;
+            }
+    
+            // Check for duplicate email
+            response = await fetch(`/check_email/${email}`);
+            data = await response.json();
+            if (data.exists) {
+                showAlert('The email you entered is already used. Please use a different email address.', 'danger');
+                return false;
+            }
+    
+            // Validate password strength
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordRegex.test(password)) {
+                showAlert('Password must be at least 8 characters long, include a capital letter, a small letter, a number, and a special character.', 'danger');
+                return false;
+            }
+    
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match.', 'danger');
+                return false;
+            }
+    
+            return true; // Validation passed
+        }
+    
+        function showAlert(message, type) {
+            const alertPlaceholder = document.getElementById('alert-placeholder');
+            const alertHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                                  ${message}
+                                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                               </div>`;
+            alertPlaceholder.innerHTML = alertHTML;
+        }
+    
+        // Check for flash messages on page load
+        const flashMessages = JSON.parse('{{ get_flashed_messages(with_categories=true) | tojson | safe }}');
+        if (flashMessages.length > 0) {
+            flashMessages.forEach(([category, message]) => {
+                showAlert(message, category);
+            });
+        }
+    });
+    </script>
+    
+{% endblock %}
+
+

@@ -1,0 +1,277 @@
+{% extends 'lay.html' %}
+
+{% block title %} Home {% endblock %}
+
+{% block content %}
+
+
+<div class="frame" id="frame1">
+    <div class="header">
+        <h1 class="main-heading">Welcome to Eithar</h1>
+        <p>Your platform for exchanging help and earning time credits</p>
+      
+    </div>
+    <img src="{{ url_for('static', filename='howpage1.png') }}"alt="Welcome Image" style="max-width: 20%; height: auto; position: absolute; right: 0; top: 200px;">
+    <img src="{{ url_for('static', filename='homepage2.png') }}"alt="Welcome Image" style="max-width: 15%; height: auto; position: absolute; left: 0; top: 240px;">
+</div>
+
+<div class="frame" id="frame2">
+<div class="info-box" id="how" data-astro-cid-j7pv25f6=""> 
+    <div class="info-box-left" data-astro-cid-j7pv25f6=""> 
+        <h3 style="margin: 0px;text-align: center; font-family: Inter, sans-serif;" data-astro-cid-j7pv25f6="">Do what you love, help others and get what you need</h3> 
+        <h5 data-astro-cid-j7pv25f6="" style="font-family: Inter, sans-serif;"></h5> </div> 
+        <div class="info-box-right" data-astro-cid-j7pv25f6=""> 
+            <p class="one step" data-astro-cid-j7pv25f6="" style="font-family: Inter, sans-serif; font-size: 20px;">
+                Create an account to join our community. </p> 
+            <p class="two step" data-astro-cid-j7pv25f6="" style="font-family: Inter, sans-serif;font-size: 20px;">
+                Browse Services and explore the variety of services offered by our members.  </p> 
+            <p class="three step" data-astro-cid-j7pv25f6="" style="font-family: Inter, sans-serif;font-size: 20px;">
+                 Engage with others by offering or requesting services. </p> 
+            <p class="four step" data-astro-cid-j7pv25f6="" style="font-family: Inter, sans-serif;font-size: 20px;">
+               Get rewarded with time credits for your exchanges.</p> </div> </div>
+</div>
+
+ <div class="frame" id="frame3"> 
+  <div class="header">
+    <h1>Why Eithar?</h1>          
+<!-- Updated features section with card design -->
+<div class="features">
+    <div class="feature card">
+        <i class="fas fa-clock"></i>
+        <h3>Time-Based Credit Exchanges</h3>
+        <p>Earn credits for the time you spend helping others.</p>
+    </div>
+    <div class="feature card">
+        <i class="fas fa-users"></i>
+        <h3>Community-Driven Services</h3>
+        <p>Our platform is powered by the community, for the community.</p>
+    </div>
+    <div class="feature card">
+        <i class="fas fa-exchange-alt"></i>
+        <h3>Flexible Transactions</h3>
+        <p>Choose when and how to use your earned credits.</p>
+    </div>
+</div>
+</div>
+
+<style>
+
+body {
+        background-color: #F4F2EC;
+    }
+.frame {
+        min-height: 100vh;
+        padding: 22px; /* 4-point grid spacing */
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .header, .section {
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .main-heading {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 900;
+        font-size: 64px;
+        line-height: 80px;
+        color: #221F20;
+        margin-bottom: 24px; /* 4-point grid spacing */
+        text-align: center;
+    }
+
+    h1 {
+    font-size: 36px;
+    font-weight: 700;
+    text-align: center;
+}
+
+    .header p {
+        font-size: 20px;
+        color: #555;
+        margin: 16px 0; /* 4-point grid spacing */
+        text-align: center;
+    }
+
+    /* Features section with cards */
+    .features {
+        display: flex;
+        justify-content: space-around;
+        padding: 50px 20px;
+        background-color: #f4f2ec;
+        margin: -50px;
+        align-items: stretch;
+        flex-direction: row;
+        gap: 2em ;
+    }
+
+    .feature {
+        text-align: center;
+        width: 250px;
+    }
+
+    /* Card styling for each feature */
+    .card {
+        background-color: hsl(156, 100%, 19%, 5%);
+        padding: 8px;
+        margin: 10px;
+        border-radius: 1rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .feature i {
+        font-size: 50px;
+        color: #e26d12;
+        margin-bottom: 15px;
+    }
+
+    .feature h3 {
+        color: #000000;
+        margin: 10px 0;
+    }
+
+    .feature p {
+        color: #555555;
+    }
+
+    .cta-section {
+        text-align: center;
+        background-color: #00613a;
+        padding: 50px 20px;
+        color: #f4f2ec;
+    }
+
+    .cta-button {
+        background-color: #e26d12;
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        font-size: 20px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .cta-button:hover {
+        background-color: #d25d10;
+    }
+
+    /* Custom Shape Divider CSS */
+    .custom-shape-divider-top-1732299060 {
+        position: relative; /* Changed from absolute to relative */
+        margin-top: -50px; /* Adjust margin to bring it closer to the introduction */
+        width: 100%;
+        overflow: hidden;
+        line-height: 0;
+    }
+
+    .custom-shape-divider-top-1732299060 svg {
+        position: relative;
+        display: block;
+        width: calc(152% + 1.3px);
+        height: 500px;
+    }
+
+    .custom-shape-divider-top-1732299060 .shape-fill {
+        fill: #00613A;
+    }
+
+    .info-box[data-astro-cid-j7pv25f6] {
+    background-color: hsl(104, 52%, 73%, 20%);
+    border-radius: 1rem;
+    padding: 3em 5em;
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
+    flex-direction: column;
+    margin-top: 90px;
+    align-items: center;
+}
+
+.info-box-left[data-astro-cid-j7pv25f6] {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.info-box-right[data-astro-cid-j7pv25f6] {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 70%;
+    gap: 5em;
+}
+.one[data-astro-cid-j7pv25f6]:before {
+    content: "1";
+    font-size: 18pt;
+    font-weight: 800;
+    position: absolute;
+    transform: translate(-1em);
+    color: #e26d12;
+    line-height: 1;
+}
+
+.two[data-astro-cid-j7pv25f6]:before {
+    content: "2";
+    font-size: 18pt;
+    font-weight: 800;
+    position: absolute;
+    transform: translate(-1em);
+    color: #e26d12;
+    line-height: 1;
+}
+.three[data-astro-cid-j7pv25f6]:before {
+    content: "3";
+    font-size: 18pt;
+    font-weight: 800;
+    position: absolute;
+    transform: translate(-1em);
+    color: #e26d12;
+    line-height: 1;
+}
+.four[data-astro-cid-j7pv25f6]:before {
+    content: "4";
+    font-size: 18pt;
+    font-weight: 800;
+    position: absolute;
+    transform: translate(-1em);
+    color: #e26d12;
+    line-height: 1;
+}
+
+h3 {
+    font-size: 36px;
+    font-weight: 700;
+}
+p {
+    font-size:  0.8rem;
+    letter-spacing: normal;
+    text-align: left;
+}
+p {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    unicode-bidi: isolate;
+}
+.step[data-astro-cid-j7pv25f6] {
+    width: 30%;
+    flex-grow: 2;
+}
+
+
+
+</style>
+{% endblock %}

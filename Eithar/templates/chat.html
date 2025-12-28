@@ -1,0 +1,411 @@
+{% extends 'lay.html' %}
+
+{% block title %}
+    Chat Room
+{% endblock %}
+
+{% block content %}
+
+
+
+<body>
+<div class="chat-container">
+    <div class="sidebar">
+        <input type="text" id="search-bar" placeholder="Search..." />
+        <div id="chat-rooms">
+            <!-- Chat rooms will be dynamically added here -->
+        </div>
+    </div>
+    <div class="chat-content">
+        <div class="chat-header">
+            <h1>{{ other_Fullname }}</h1>
+        </div>
+        <div class="chat-messages" id="messages">
+
+            {% for message in messages %}
+                <div class="message {% if message.sender_id == user_id %}sent{% else %}received{% endif %}" data-message-id="{{ message.id }}">
+                    <span class="Fullname">{{ message.Fullname }}:</span> 
+                    <span class="message-text">{{ message.message }}</span> 
+                    <span class="message-time">{{ message.time }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="Type a message..." />
+            <button id="send-button" onclick="sendMessage()" disabled>Send</button>
+        </div>
+    </div>
+</div>
+<div id="toast-container" style="position: absolute; top: 10px; right: 10px;"></div>
+</body>
+
+
+<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script> 
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const socket = io.connect(window.location.origin);
+
+    const messageList = document.getElementById('messages');
+    const sendButton = document.getElementById('send-button');
+    const messageInput = document.getElementById('message-input');
+    const room_id = "{{ room_id }}";
+    const Fullname = "{{ Fullname }}";
+    const user_id = "{{ user_id }}";
+    const chatRoomsContainer = document.getElementById('chat-rooms');
+
+    // Fetch initial messages from server
+    fetch('/get_messages/' + room_id)
+        .then(response => response.json())
+        .then(messages => {
+            messageList.innerHTML = ''; // Clear existing messages
+            let lastMessage = '';
+            messages.forEach(data => {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message', data.sender_id == user_id ? 'sent' : 'received');
+                messageDiv.setAttribute('data-message-id', data.id);
+                
+                messageDiv.innerHTML = `
+                    <span class="Fullname">${data.Fullname}:</span>
+                    <span class="message-text">${data.message}</span>
+                    <span class="message-time">${data.time}</span>
+                `;
+                messageList.appendChild(messageDiv);
+                lastMessage = data.message; // Keep track of the last message
+            });
+            messageList.scrollTop = messageList.scrollHeight;
+
+            // Update the last message in the sidebar for the current chat room
+            const currentRoomCard = document.querySelector(`[data-room-id="${room_id}"]`);
+            if (currentRoomCard) {
+                currentRoomCard.querySelector('.last-message').textContent = lastMessage;
+                currentRoomCard.querySelector('.unread-indicator').style.display = 'none'; // Clear unread indicator
+            }
+        });
+
+    // Fetch chat rooms from server
+    fetch('/get_chat_rooms')
+        .then(response => response.json())
+        .then(chatRooms => {
+            chatRooms.forEach(room => {
+                const roomDiv = document.createElement('div');
+                roomDiv.classList.add('chat-room-card');
+                roomDiv.setAttribute('data-room-id', room.room_id);
+                roomDiv.innerHTML = `
+                    <a href="/chat/${room.room_id}">
+                        <span class="room-Fullname">${room.Fullname}</span>
+                        <span class="last-message"></span>
+                        <span class="unread-indicator" style="display: none;">●</span> <!-- Green dot for unread messages -->
+                    </a>
+                `;
+                chatRoomsContainer.appendChild(roomDiv);
+
+                // Fetch the last message for each chat room
+                fetch('/get_messages/' + room.room_id)
+                    .then(response => response.json())
+                    .then(messages => {
+                        const lastMessageObj = messages.length > 0 ? messages[messages.length - 1] : null;
+                        const lastMessage = lastMessageObj ? (lastMessageObj.sender_id == user_id ? `You: ${lastMessageObj.message}` : `${lastMessageObj.Fullname}: ${lastMessageObj.message}`) : '';
+                        roomDiv.querySelector('.last-message').textContent = lastMessage;
+
+                        // Show unread indicator if the last message is unread 
+                        if (lastMessageObj && !lastMessageObj.is_read && lastMessageObj.sender_id != user_id) { 
+                            roomDiv.querySelector('.unread-indicator').style.display = 'inline'; 
+                            chatRoomsContainer.prepend(roomDiv); // Move to top if unread
+                        }
+                    });
+
+                // Add click event listener to clear unread indicator 
+                roomDiv.querySelector('a').addEventListener('click', function() { 
+                    const unreadIndicator = roomDiv.querySelector('.unread-indicator'); 
+                    unreadIndicator.style.display = 'none';
+                });
+            });
+        });
+
+    // Join the chat room
+    socket.emit('join', { room_id: room_id });
+
+    // Listen for incoming messages from the server
+    socket.on('receive_message', function(data) {
+        if (!document.querySelector(`[data-message-id="${data.id}"]`)) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', data.sender_id == user_id ? 'sent' : 'received');
+            messageDiv.setAttribute('data-message-id', data.id);
+            messageDiv.innerHTML = `
+                <span class="Fullname">${data.Fullname}:</span>
+                <span class="message-text">${data.message}</span>
+                <span class="message-time">${data.time}</span>
+            `;
+            messageList.appendChild(messageDiv);
+            messageList.scrollTop = messageList.scrollHeight;
+            showToastNotification(data.Fullname, data.message, data.time); // Show toast notification
+
+            // Update the chat room in the sidebar
+            const roomCard = document.querySelector(`[data-room-id="${data.room_id}"]`);
+            if (roomCard) {
+                const lastMessage = data.sender_id == user_id ? `You: ${data.message}` : `${data.Fullname}: ${data.message}`;
+                roomCard.querySelector('.last-message').textContent = lastMessage;
+
+                // Show the unread indicator only if the current user is not the sender 
+                if (data.sender_id != user_id && !data.is_read) { 
+                    const unreadIndicator = roomCard.querySelector('.unread-indicator'); 
+                    unreadIndicator.style.display = 'inline';
+                }
+                chatRoomsContainer.prepend(roomCard);
+            }
+        }
+    });
+
+    window.sendMessage = function() {
+        const message = messageInput.value.trim();
+        if (message === '') return;
+
+        socket.emit('send_message', {
+            room_id: room_id,
+            Fullname: Fullname,
+            message: message,
+            time: new Date().toLocaleTimeString()
+        });
+
+        messageInput.value = '';
+        sendButton.disabled = true;
+    };
+
+    messageInput.addEventListener('input', function() {
+        sendButton.disabled = messageInput.value.trim() === '';
+    });
+
+    // Add click event listener to clear unread indicator 
+    chatRoomsContainer.querySelectorAll('.chat-room-card a').forEach(roomLink => { 
+        roomLink.addEventListener('click', function() { 
+            const unreadIndicator = this.querySelector('.unread-indicator'); 
+            if (unreadIndicator) { 
+                unreadIndicator.style.display = 'none'; 
+            } 
+        });
+    });
+});
+  
+</script>
+
+
+<style>
+body {
+    background-color: #F4F2EC;
+}
+
+/* تعديل حجم الـ chat-container */
+.chat-container {
+    width: 100%;
+    max-width: 1200px;
+    height: 90vh;
+    margin: 40px auto;
+    background-color: white;
+    border-radius: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    overflow: hidden;
+}
+
+/* Sidebar for chat rooms */
+.sidebar {
+    width: 30%;
+    background-color: #f4f4f4;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Chat content area */
+.chat-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #ffffff;
+}
+
+/* Header section */
+.chat-header {
+    background-color: #00613a;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 40px;
+}
+
+/* Chat messages container */
+.chat-messages {
+    margin-top: 15px;
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Individual message styling */
+.message {
+    max-width: 60%;
+    margin: 10px 0;
+    padding: 12px 15px;
+    border-radius: 15px;  /* Rounding the message bubbles */
+    word-wrap: break-word;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Add subtle shadow for separation */
+    background-color: #f9f9f9;  /* Light background for all messages */
+}
+
+/* Sent messages (user's own messages) */
+.message.sent {
+    align-self: flex-end;
+    background-color: #D3D3D3;
+    color: black;
+    text-align: right;
+    border-top-right-radius: 0;
+    border-top-left-radius: 15px;  /* Consistent rounding */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Shadow for separation */
+}
+
+/* Received messages (from other users) */
+.message.received {
+    align-self: flex-start;
+    background-color: #FF8C00;
+    color: white;
+    text-align: left;
+    border-top-left-radius: 0;
+    border-top-right-radius: 15px;  /* Consistent rounding */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Shadow for separation */
+}
+/* Styling for the username */
+.message .username {
+    font-weight: bold;
+    display: block;
+}
+
+/* Styling for the message text */
+.message .message-text {
+    margin: 5px 0;
+}
+
+/* Styling for the message timestamp */
+.message .message-time {
+    font-size: 0.8em;
+    color: #888;
+    text-align: right;
+}
+
+/* Chat input section */
+.chat-input {
+    display: flex;
+    margin-top: 10px;
+}
+
+
+
+/* Input field styling */
+.chat-input input {
+    flex-grow: 1;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+/* Input field focus effect */
+.chat-input input:focus {
+    border-color: #00613a;
+}
+
+/* Send button styling */
+.chat-input button {
+    background-color: #e26d12;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+}
+
+/* Send button hover effect */
+.chat-input button:hover {
+    background-color: #d05e0d;
+}
+
+/* Disabled send button */
+.chat-input button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+/* Sidebar search bar */
+#search-bar {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 20px;
+    border: 1px solid #ddd;
+}
+
+/* Chat room card */
+.chat-room-card {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.chat-room-card:hover {
+    background-color: #f0f0f0;
+}
+
+.chat-room-card a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.chat-room-card .room-username {
+    font-weight: bold;
+}
+
+.chat-room-card .last-message {
+    color: #888;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.unread-indicator {
+    color: green;
+    font-size: 20px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+/* Border color change for search bar on focus */
+#search-bar:focus {
+    border-color: #FF8C00; /* اللون البرتقالي */
+    box-shadow: 0 0 5px rgba(255, 140, 0, 0.5); /* إضافة تأثير ظل حول الحواف */
+    outline: none; /* إزالة الإطار الافتراضي */
+}
+
+
+</style>
+{% endblock %}

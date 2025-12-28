@@ -1,0 +1,926 @@
+{% extends 'lay.html' %}
+
+{% block title %}
+    Profile - {{ user.full_name }}
+{% endblock %}
+
+{% block content %}
+    <title>Profile Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F4F2EC;
+            padding: 20px;
+            padding-top: 60px;
+        }
+
+        .buttons .credit, .buttons .logout {
+            background-color: #f97316;
+            color: #fff;
+            padding: 5px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .profile-section {
+            text-align: center;
+            background-color: #F4F2EC;
+            padding: 20px;
+        }
+
+        .profile-section h1 {
+            font-size: 24px;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .profile-section .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .profile-section .buttons button {
+            background-color: #f97316;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .profile-section .buttons button:hover {
+            background-color: #f974168c;
+        }
+
+        .registration-frame,
+        .provided-services-frame,
+        .received-services-frame {
+            margin: 30px auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .info-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .info-section .row {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .info-section label {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .info-section label.required::after {
+            content: " *";
+            color: red;
+        }
+
+        .info-section input,
+        .info-section select,
+        .info-section textarea {
+            width: calc(100% - 40px);
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f8f8;
+        }
+
+        .info-section input.error,
+        .info-section select.error,
+        .info-section textarea.error {
+            border-color: red;
+        }
+
+        .category-list,
+        .category-box {
+            width: calc(100% - 40px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .category-box {
+            background-color: #f8f8f8;
+            position: relative;
+        }
+
+        .save-button {
+            background-color: #f97316;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .save-button:hover {
+            background-color: #f97416a1;
+        }
+
+        .delete-btn {
+            margin-left: 10px;
+            background-color: #f97316;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .provided-services-table,
+        .received-services-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .provided-services-table th,
+        .provided-services-table td,
+        .received-services-table th,
+        .received-services-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .provided-services-table th,
+        .received-services-table th {
+            background-color: #f9d7b3;
+            color: white;
+        }
+
+
+        .service-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.thin-line {
+    width: 100%; /* Full width */
+    height: 1px; /* Thin line */
+    background-color: rgba(0, 0, 0, 0.2); /* Light gray color */
+    margin: 10px 0; /* Add spacing above and below */
+}
+.service-card .delete-btn {
+    background-color: #e26c12de;;    
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.service-card .delete-btn:hover {
+    background-color:#e26d12; ;
+}
+
+#services-checklist {
+    background-color: #f8f8f8; /* لون الخلفية */
+    padding: 10px;
+    border-radius: 5px;
+    font-size:14px;
+    border: 1px solid #ddd;
+    position: relative;
+
+}
+
+#checklist-box {
+    display: flex;
+    flex-direction: row; /* ترتيب العناصر بشكل عمودي */
+    gap: 15px; /* مسافة بين العناصر */
+    flex-wrap: wrap; 
+    width:calc(100% - 40px);
+}
+
+.service-item {
+    display: flex;
+    align-items: center; /* محاذاة النص مع مربعات الاختيار */
+    gap: 10px; /* مسافة بين المربع والنص */
+}
+
+.service-item label {
+    margin: 0; /* إزالة المسافات الافتراضية بين النصوص */
+}
+
+.service-item input[type="checkbox"] {
+    margin: 0; /* إزالة المسافات الافتراضية */
+    transform: scale(1.2); /* تكبير حجم المربع قليلاً إذا أردت */
+}
+
+#toggle-password i {
+    font-size: 16px;
+    color: #888;
+}
+
+#toggle-password:hover i {
+    color: #555;
+}
+
+.modal {
+                display: none;
+                position: fixed;
+                margin-left: 350px;
+                top: 0;
+                width: 50%;
+                height: 150%;
+                overflow: auto;
+                
+                padding-top: 90px;
+            }
+        
+            .modal-content {
+                background-color: #fefefe;
+                margin: 5% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+            }
+        
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+        
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+            /* Rating Stars */ 
+            #stars { font-size: 1.5em; color: #e26d12; margin-bottom: 10px; } 
+            
+            #stars .fa-star, #stars .fa-star-half-alt, #stars .fa-star-o { margin: 0 2px; }
+
+            /* Orange Button Styles */
+.orange-button {
+    background-color: #e26d12;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Hover effect for the Orange Button */
+.orange-button:hover {
+    background-color: darkorange;
+}
+
+
+    </style>
+
+    <body>
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <h1>{{ user.full_name }}</h1>
+            <div class="buttons">
+                <button id="personal-info-btn">Personal Information</button>
+                <button id="provided-services-btn">Provided Services</button>
+                <button id="received-services-btn">Received Services</button>
+            </div>
+        </div>
+
+
+        <div class="thin-line"></div>
+
+
+        <!-- Registration Form (Inside Frame) -->
+        <div class="registration-frame" id="personal-info-frame">
+            <div id="feedback-message" class="alert alert-success" role="alert" style="display: none; text-align: center; margin-bottom: 10px;">
+                Changes saved successfully!
+            </div>
+            <div id="fullname-alert" style="margin-bottom: 10px;"></div>
+            <div id="email-alert" style="margin-bottom: 10px;"></div>
+            <div id="stars"  style="margin-bottom: 10px;"> 
+                {% for i in range(1, 6) %} 
+                {% if i <= average_rating %} 
+                <i class="fas fa-star"></i> 
+                {% elif i - average_rating < 1 %} 
+                <i class="fas fa-star-half-alt"></i> 
+                {% else %} <i class="far fa-star"></i> 
+                {% endif %} 
+                {% endfor %} 
+            </div>
+            <form method="POST" action="{{ url_for('profile') }}">
+                <div class="info-section">
+                    <!-- Full Name Field -->
+                    <div class="row mb-3">
+                        <label for="Fullname" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="Fullname" name="Fullname" value="{{ user.Fullname }}" placeholder="Enter your full name" maxlength="25" pattern="^[a-zA-Z\s]+$" required>
+                        <div class="invalid-feedback">
+                            Full name should contain only letters and spaces.
+                        </div>
+                    </div>
+        
+                    <!-- User ID Field -->
+                    <div class="row mb-3">
+                        <label for="user_id" class="form-label">ID:</label>
+                        <input type="text" class="form-control" id="user_id" name="user_id" value="{{ user.id }}" readonly>
+                    </div>
+        
+                     <!-- Email Field -->
+                   <div class="row mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" placeholder="Enter your email address" pattern="^[a-zA-Z0-9._%+-]+@domain\.com$" required>
+                        <div id="email-invalid-feedback" class="invalid-feedback">
+                    Please enter a valid email address from @domain.com.
+                     </div>
+                     </div>
+        
+                    <!-- Location Field -->
+                    <div class="row mb-3">
+                        <label for="location" class="form-label">Location:</label>
+                        <input type="text" class="form-control" id="location" name="location" value="{{ user.location }}" readonly>
+                    </div>
+        
+                    <!-- Region Field -->
+                    <div class="row mb-3">
+                        <label for="region_id" class="form-label">Region:</label>
+                        <select class="form-control" id="region_id" name="region_id">
+                            {% if user.region_id %}
+                                {% for region in regions %}
+                                    <option value="{{ region.region_id }}" {% if region.region_id == user.region_id %}selected{% endif %}>{{ region.region_name }}</option>
+                                {% endfor %}
+                            {% else %}
+                                <option value="" selected>--Select Region--</option>
+                                {% for region in regions %}
+                                    <option value="{{ region.region_id }}">{{ region.region_name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+        
+                    <!-- Bio Field -->
+                    <div class="row mb-3">
+                        <label for="bio" class="form-label">Bio (Optional):</label>
+                        <textarea class="form-control" id="bio" name="bio" maxlength="500">{{ user.bio }}</textarea>
+                    </div>
+        
+                    <!-- Category Field -->
+                    <div class="row mb-3">
+                        <label for="category" class="form-label">Select Category:</label>
+                        <select class="form-control" id="category" name="category">
+                            <option value="">--Select Category--</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+        
+                    <!-- Service Alert -->
+                    <div id="service-alert" class="alert alert-danger" role="alert" style="display: none; text-align: center;">
+                        This service is already added.
+                    </div>
+        
+                    <!-- Services Checklist -->
+                    <div class="row mb-3">
+                        <div id="services-checklist" class="row" style="display: none;">
+                            <label class="form-label">Select Services:</label>
+                            <div id="checklist-box"></div>
+                        </div>
+                    </div>
+        
+                    <!-- Selected Services -->
+                    <div class="row mb-3">
+                        <label class="form-label">Selected Services:</label>
+                        <div id="services-box" class="category-box">
+                            {% for service in selected_services %}
+                                <div class="service-card" id="card-{{ service.service_id }}">
+                                    <span>{{ service.service_name }}</span>
+                                    <button class="delete-btn" type="button" onclick="deleteService('{{ service.service_id }}')">Delete</button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <button class="save-button" type="button" id="change-password-btn">Change Password</button>                    <button class="save-button" id="save-services-btn" type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="change-password-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <form id="change-password-form">
+                    <!-- Old Password Field -->
+                    <label for="old-password">Old Password:</label>
+                    <div style="position: relative;">
+                        <input type="password" id="old-password" name="old-password" required>
+                        <span id="toggle-old-password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                            <i class="fa fa-eye"></i>
+                        </span>
+                    </div>
+        
+                    <!-- New Password Field -->
+                    <label for="new-password">New Password:</label>
+                    <div style="position: relative;">
+                        <input type="password" id="new-password" name="new-password" required>
+                        <span id="toggle-new-password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                            <i class="fa fa-eye"></i>
+                        </span>
+                    </div>
+        
+                    <!-- Bootstrap Alert for Password Validation -->
+                    <div id="password-validation-alert" class="alert alert-danger mt-3" style="display: none;">
+                        Password must be at least 8 characters long, include a capital letter, a small letter, a number, and a special character.
+                    </div>
+        
+                    <button class="save-button mt-3" type="submit">Change Password</button>
+                </form>
+                <div id="password-change-message" style="display:none;"></div>
+            </div>
+        </div>
+        
+        <!-- Provided Services Frame -->
+        <div class="provided-services-frame" id="provided-services-frame">
+            <h3>Provided Services</h3>
+            <table class="provided-services-table">
+                <thead>
+                    <tr>
+                        <th>Service Name</th>
+                        <th>Status</th>
+                        <th>date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if provided_services %}
+                        {% for service in provided_services %}
+                            <tr>
+                                <td>{{ service.service_name }}</td>
+                                <td>{{ service.request_status }}</td>
+                                <td>{{ service.created_at }}</td>
+                                <td><button class="orange-button" onclick="showDetails('{{ service.request_id }}')">Details</button></td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center;">No provided services found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+<!-- Popup Modal --> 
+<!-- Popup Modal -->
+<div id="detailsModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h4>Service Details</h4>
+        <p><strong>Requester Name:</strong> <span id="requesterName"></span></p>
+        <p><strong>Time Spent:</strong> <span id="timeSpent"></span></p>
+        <p><strong>Review:</strong> <span id="review"></span></p>
+        <p><strong>Rating:</strong> <span id="rating"></span></p>
+    </div>
+</div>
+
+
+        <!-- Received Services Frame -->
+        <div class="received-services-frame" id="received-services-frame">
+    <h3>Received Services</h3>
+    <table class="received-services-table">
+        <thead>
+            <tr>
+                <th>Service Name</th>
+                <th>Provider Name</th> <!-- Added Provider Name -->
+                <th>Status</th>
+                <th>time spent</th>
+                <th>date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if received_services %}
+                {% for service in received_services %}
+                    <tr>
+                        <td>{{ service.service_name }}</td>
+                        <td>{{ service.provider_name }}</td> <!-- Displaying the provider's name -->
+                        <td>{{ service.request_status }}</td>
+                        <td>{{ service.time_spent }}</td>
+                        <td>{{ service.created_at }}</td>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center;">No received services found.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+        </div>
+
+        <script>
+            const personalInfoBtn = document.getElementById("personal-info-btn");
+            const providedServicesBtn = document.getElementById("provided-services-btn");
+            const receivedServicesBtn = document.getElementById("received-services-btn");
+            const personalInfoFrame = document.getElementById("personal-info-frame");
+            const providedServicesFrame = document.getElementById("provided-services-frame");
+            const receivedServicesFrame = document.getElementById("received-services-frame");
+            const fullnameInput = document.getElementById('Fullname');
+            const emailInput = document.getElementById('email'); // Added email input reference
+            const modal = document.getElementById("change-password-modal");
+            const changePasswordBtn = document.getElementById("change-password-btn");
+        
+            // Toggle frames based on button clicks
+            personalInfoBtn.addEventListener("click", () => {
+                personalInfoFrame.style.display = "block";
+                providedServicesFrame.style.display = "none";
+                receivedServicesFrame.style.display = "none";
+            });
+        
+            providedServicesBtn.addEventListener("click", () => {
+                personalInfoFrame.style.display = "none";
+                providedServicesFrame.style.display = "block";
+                receivedServicesFrame.style.display = "none";
+            });
+        
+            receivedServicesBtn.addEventListener("click", () => {
+                personalInfoFrame.style.display = "none";
+                providedServicesFrame.style.display = "none";
+                receivedServicesFrame.style.display = "block";
+            });
+        
+            // Enable service dropdown and populate it based on the selected category
+            document.getElementById('category').addEventListener('change', function () {
+                const categoryId = this.value;
+                const checklistBox = document.getElementById('checklist-box');
+                const servicesChecklist = document.getElementById('services-checklist');
+        
+                checklistBox.innerHTML = '';
+                servicesChecklist.style.display = 'none';
+        
+                if (categoryId) {
+                    fetch('/get_services/' + categoryId)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.services && data.services.length > 0) {
+                                servicesChecklist.style.display = 'block';
+                                data.services.forEach(service => {
+                                    const checkbox = document.createElement('input');
+                                    checkbox.type = 'checkbox';
+                                    checkbox.id = `service-${service.service_id}`;
+                                    checkbox.value = service.service_id;
+        
+                                    const label = document.createElement('label');
+                                    label.htmlFor = `service-${service.service_id}`;
+                                    label.textContent = service.service_name;
+        
+                                    const div = document.createElement('div');
+                                    div.appendChild(checkbox);
+                                    div.appendChild(label);
+        
+                                    checkbox.addEventListener('change', function () {
+                                        if (this.checked) {
+                                            addServiceCard(service.service_id, service.service_name);
+                                        }
+                                    });
+        
+                                    checklistBox.appendChild(div);
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Error fetching services:', error));
+                }
+            });
+        
+            // Show service alert
+            function showServiceAlert(message) {
+                const serviceAlert = document.getElementById('service-alert');
+                serviceAlert.textContent = message;
+                serviceAlert.style.display = 'block';
+        
+                setTimeout(function () {
+                    serviceAlert.style.display = 'none';
+                }, 5000);
+            }
+        
+            // Toggle password visibility for old password
+            document.getElementById("toggle-old-password").addEventListener("click", function () {
+                const passwordField = document.getElementById("old-password");
+                const toggleIcon = this.querySelector("i");
+        
+                if (passwordField.type === "password") {
+                    passwordField.type = "text";
+                    toggleIcon.classList.remove("fa-eye");
+                    toggleIcon.classList.add("fa-eye-slash");
+                } else {
+                    passwordField.type = "password";
+                    toggleIcon.classList.remove("fa-eye-slash");
+                    toggleIcon.classList.add("fa-eye");
+                }
+            });
+        
+            // Toggle password visibility for new password
+            document.getElementById("toggle-new-password").addEventListener("click", function () {
+                const passwordField = document.getElementById("new-password");
+                const toggleIcon = this.querySelector("i");
+        
+                if (passwordField.type === "password") {
+                    passwordField.type = "text";
+                    toggleIcon.classList.remove("fa-eye");
+                    toggleIcon.classList.add("fa-eye-slash");
+                } else {
+                    passwordField.type = "password";
+                    toggleIcon.classList.remove("fa-eye-slash");
+                    toggleIcon.classList.add("fa-eye");
+                }
+            });
+        
+            // Add a service card to the selected services box
+            function addServiceCard(serviceId, serviceName) {
+                const servicesBox = document.getElementById('services-box');
+                const existingService = document.getElementById(`card-${serviceId}`);
+        
+                if (existingService) {
+                    showServiceAlert('This service is already added.');
+                    return;
+                }
+        
+                const card = document.createElement('div');
+                card.className = 'service-card';
+                card.id = `card-${serviceId}`;
+                card.textContent = serviceName;
+        
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'delete-btn';
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', function () {
+                    deleteService(serviceId);
+                });
+        
+                card.appendChild(deleteButton);
+                servicesBox.appendChild(card);
+        
+                saveService(serviceId);
+            }
+        
+            // Save service to the database
+            function saveService(serviceId) {
+                fetch('/save_service', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ service_id: serviceId })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.message) {
+                            alert('An error occurred while saving the service.');
+                        }
+                    })
+                    .catch(error => console.error('Error saving service:', error));
+            }
+             
+
+            // Function to show the modal and populate it with data
+            function showDetails(requestId) {
+    console.log("Show Details called with requestId:", requestId);
+
+    fetch(`/api/service-details/${requestId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Fetched service details:", data);
+
+            // Populate the modal with the fetched data
+            document.getElementById('requesterName').innerText = data.requester_name;
+            document.getElementById('timeSpent').innerText = data.time_spent;
+            document.getElementById('review').innerText = data.review;
+            document.getElementById('rating').innerText = data.rating;
+
+            // Display the modal
+            const modal = document.getElementById('detailsModal');
+            modal.style.display = 'block';
+        })
+        .catch(error => {
+            console.error('Error fetching service details:', error);
+            alert('Failed to fetch service details. Please try again.');
+        });
+}
+
+// Close the modal when the close button is clicked
+document.querySelector('.close').addEventListener('click', function () {
+    const modal = document.getElementById('detailsModal');
+    modal.style.display = 'none';
+});
+
+// Close the modal when clicking outside of it
+window.addEventListener('click', function (event) {
+    const modal = document.getElementById('detailsModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+      
+            // Fetch and display selected services
+            function fetchSelectedServices() {
+                fetch('/get_user_services')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Fetched services data:", data);
+                        var servicesBox = document.getElementById('services-box');
+                        servicesBox.innerHTML = '';
+        
+                        if (data.services && data.services.length > 0) {
+                            data.services.forEach(service => {
+                                console.log("Service ID:", service.service_id);
+        
+                                var serviceCard = document.createElement('div');
+                                serviceCard.classList.add('service-card');
+                                serviceCard.id = `card-${service.service_id}`;
+        
+                                var serviceName = document.createElement('span');
+                                serviceName.textContent = service.service_name;
+                                serviceName.classList.add('service-name');
+                                serviceCard.appendChild(serviceName);
+        
+                                var deleteButton = document.createElement('button');
+                                deleteButton.textContent = 'Delete';
+                                deleteButton.classList.add('delete-btn');
+                                deleteButton.onclick = () => deleteService(service.service_id);
+                                serviceCard.appendChild(deleteButton);
+        
+                                servicesBox.appendChild(serviceCard);
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error fetching user services:', error));
+            }
+        
+            // Delete service from the database and remove the card
+            function deleteService(serviceId) {
+                const payload = { service_id: serviceId };
+                console.log("Sending delete request with payload:", payload);
+        
+                fetch('/delete_service', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Delete response data:", data);
+                        if (data.message) {
+                            showAlert('Service deleted successfully!', 'success');
+                            const card = document.getElementById(`card-${serviceId}`);
+        
+                            if (card) {
+                                card.remove();
+                            }
+                        } else {
+                            alert('An error occurred while deleting the service: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error deleting service:', error);
+                        showAlert("Failed to delete service. Please try again.", 'danger');
+                    });
+            }
+        
+            // Show Bootstrap alert
+            function showAlert(message, type) {
+                const alertPlaceholder = document.getElementById('alertPlaceholder');
+                const alert = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert"> 
+                    ${message} 
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> 
+                </div>`;
+        
+                alertPlaceholder.innerHTML = alert;
+            }
+        
+            // Validate Full Name
+            fullnameInput.addEventListener('input', () => {
+                const regex = /^[a-zA-Z\s]+$/;
+                const value = fullnameInput.value.trim();
+        
+                if (!regex.test(value)) {
+                    fullnameInput.classList.add('is-invalid');
+                } else {
+                    fullnameInput.classList.remove('is-invalid');
+                }
+            });
+        
+            // Validate Email
+            emailInput.addEventListener('input', () => {
+                const regex = /^[a-zA-Z0-9._%+-]+@domain\.com$/;
+                const value = emailInput.value.trim();
+        
+                if (!regex.test(value)) {
+                    emailInput.classList.add('is-invalid');
+                } else {
+                    emailInput.classList.remove('is-invalid');
+                }
+            });
+        
+            // Open the change password modal
+            changePasswordBtn.addEventListener("click", function () {
+                modal.style.display = "block";
+            });
+        
+            // Close the change password modal
+            document.querySelector(".close").addEventListener("click", function () {
+                modal.style.display = "none";
+            });
+        
+            // Close the modal when clicking outside of it
+            window.addEventListener("click", function (event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            });
+        
+            // Handle change password form submission
+            document.getElementById("change-password-form").addEventListener("submit", function (event) {
+                event.preventDefault();
+        
+                const oldPassword = document.getElementById("old-password").value;
+                const newPassword = document.getElementById("new-password").value;
+                const passwordValidationAlert = document.getElementById("password-validation-alert");
+
+        
+                if (!validatePassword(newPassword)) {
+                    passwordValidationAlert.style.display = "block";
+                    return;
+                } else {
+                 // Hide the alert if the password is valid
+                 passwordValidationAlert.style.display = "none";
+                }
+        
+                fetch('/change_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ old_password: oldPassword, new_password: newPassword })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const messageDiv = document.getElementById("password-change-message");
+                        if (data.success) {
+                            messageDiv.textContent = "Password changed successfully!";
+                            messageDiv.style.color = "green";
+                        } else {
+                            messageDiv.textContent = "Failed to change password: " + data.message;
+                            messageDiv.style.color = "red";
+                        }
+                        messageDiv.style.display = "block";
+                    })
+                    .catch(error => console.error('Error changing password:', error));
+            });
+        
+            // Validate password strength
+            function validatePassword(password) {
+                const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+                return passwordRegex.test(password);
+            }
+        
+            // Load selected services on page load
+            document.addEventListener('DOMContentLoaded', fetchSelectedServices);
+        </script>
+
+    </body>
+</html>
+{% endblock %}

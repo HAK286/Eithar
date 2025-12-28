@@ -1,0 +1,101 @@
+{% extends "lay.html" %}
+
+{% block title %}Meet the Team{% endblock %}
+
+{% block content %}
+<div class="container team-page">
+    <h2 class="team-title">Meet the Team</h2>
+    <div class="thin-line"></div>
+    <div class="team-cards">
+        <!-- Team Member 1 -->
+        <div class="team-card">
+            
+            <h3>Hadel Alkhunaıfer</h3>
+            <p>A Computer Information Systems specialist with a passion for project management, web development, and creating user-centered solutions. Dedicated to continuous learning and leveraging technology to drive impactful results.</p>
+            <i class="fas fa-envelope email-icon" onclick="window.location.href='mailto:hadel.adel@gmail.com';"></i>
+                </div>
+
+        <!-- Team Member 2 -->
+        <div class="team-card">
+            
+            <h3>Shahad Alduaylij</h3>
+            <p>A designer with a strong interest in website interface design. She enjoys creating user-friendly and visually appealing designs. Along with her design skills, she is also interested in taking on management roles, where she can lead and oversee projects to ensure smooth execution.</p>
+            <i class="fas fa-envelope email-icon" onclick="window.location.href='mailto:shahad33ad@gmail.com';"></i>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* General Styles */
+    body {
+            background-color: #F4F2EC;
+        }
+
+.container.team-page {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.team-title {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    color: #1d5e1d;
+}
+
+.thin-line {
+    width: 100%; /* Full width */
+    height: 1px; /* Thin line */
+    background-color: rgba(0, 0, 0, 0.2); /* Light gray color */
+    margin: 10px 0; /* Add spacing above and below */
+}
+
+.team-cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.team-card {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.team-card img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 15px;
+}
+
+.team-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.team-card p {
+    font-size: 1rem;
+    color: #555;
+}
+
+.team-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+.email-icon { 
+    margin-left: 10px; 
+    cursor: pointer; 
+    color: #555; 
+    } 
+    
+    .email-icon:hover { 
+        color: #000; 
+        }
+</style>
+{% endblock %}

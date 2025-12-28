@@ -1,0 +1,339 @@
+{% extends 'lay.html' %}
+
+{% block title %} Services {% endblock %}
+
+{% block content %}
+    <title>Service Providers</title>
+    
+    <style>
+        /* General Styles */
+body {
+    background-color: #F4F2EC;
+}
+
+.star {
+    color: #e65b0e; /* Gold color for stars */
+    font-size: 20px;
+}
+
+/* Section Titles */
+.content h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 80px;
+    font-weight: bold;
+    color: #333;
+}
+
+.content h3 {
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Navigation Bar */
+.menu-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background-color: #00613a4d;
+    padding: 140px;
+    border-radius: 3em;
+    margin: -250px -90px 40px -90px;
+}
+
+.menu-bar .categories {
+    display: flex;
+    gap: 20px;
+}
+
+.menu-bar div {
+    position: relative;
+    color: #333;
+    cursor: pointer;
+    padding: 5px 10px;
+    font-size: 16px;
+    margin-bottom: -150px;
+}
+
+/* Dropdown Menu */
+.dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    color: #151514;
+    border: 1px solid #f97316;
+    border-radius: 5px;
+    display: none;
+    min-width: 220px;
+    z-index: 1000;
+}
+
+.dropdown ul {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+}
+
+.dropdown ul li {
+    padding: 6px;
+    cursor: pointer;
+}
+
+.dropdown ul li:hover {
+    background-color: #f0f0f0;
+}
+
+.dropdown li {
+    display: flex;
+    align-items: center;
+    padding: 6px;
+}
+
+.dropdown li::before {
+    content: "•";
+    margin-right: 8px;
+    color: black;
+    font-size: 16px;
+}
+
+.dropdown a {
+    display: block;
+    text-decoration: none;
+    color: #1a1a19;
+    font-size: 14px;
+    text-align: left;
+}
+
+.menu-bar div:hover .dropdown {
+    display: block;
+}
+
+/* Services Section */
+.services {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.service-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 200px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.service-card h3 {
+    font-size: 16px;
+    margin: 10px 0;
+    color: #333;
+}
+
+.service-card p {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.service-card .profile-btn {
+    background-color: #00613a;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.service-card .profile-btn:hover {
+    background-color: #e65b0e;
+}
+
+/* Thin Line */
+.thin-line {
+    width: 100%;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.2);
+    margin: 10px 0;
+}
+
+     
+    </style>
+
+    <!-- Content Section -->
+    <div class="content">
+
+
+        <!-- Services Bar -->
+        <h2>Our Services</h2>
+        <div class="menu-bar">
+            {% if categories %}
+                {% for category_id, category in categories.items() %}
+                    <div>
+                        {{ category.name }}
+                        <div class="dropdown">
+                            <ul>
+
+                            {% if category.services %}
+                                {% for service in category.services %}
+                                
+                                    <li>
+                                        <a href="{{ url_for('ServiceProviders', service_id=service.id) }}">{{ service.name }}</a>
+                                    </li>
+                        
+                                {% endfor %}
+                            </ul>
+
+                            {% else %}
+                                <p>No services available for this category.</p>
+                            {% endif %}
+                        
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No categories available.</p>
+            {% endif %}
+
+            <!-- Add the region filter dropdown here -->
+            <div>
+                Filter By Region
+                <div class="dropdown">
+                    <ul>
+                        <li>
+                            <a href="#" data-region="">All Regions</a>
+                        </li>
+                        {% for region in regions %}
+                            <li>
+                                <a href="#" data-region="{{ region.region_id }}">{{ region.region_name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <h3>All Service Providers</h3>
+        <div class="thin-line"></div>
+
+        <div class="services">
+            {% if users %}
+                {% for user in users %}
+                    <div class="service-card">
+                        <h3>{{ user.Fullname }}</h3>
+                        <div class="rating">
+                            {% set avg_rating_int = user.avg_rating | int %}
+                            {% for i in range(avg_rating_int) %}
+                                <span class="star">&#9733;</span> <!-- Filled star -->
+                            {% endfor %}
+                            {% for i in range(5 - avg_rating_int) %}
+                                <span class="star">&#9734;</span> <!-- Empty star -->
+                            {% endfor %}
+                        </div>
+                        <a href="{{ url_for('public_profile', user_id=user.id) }}" class="profile-btn">View Profile</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No service providers available.</p>
+            {% endif %}
+        </div>
+        
+               
+        
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script> 
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    
+    <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    const serviceLinks = document.querySelectorAll('.menu-bar .dropdown a:not([data-region])');
+    const regionLinks = document.querySelectorAll('.menu-bar .dropdown a[data-region]');
+    const servicesContainer = document.querySelector('.services');
+    let activeServiceId = null;
+    let activeRegionId = null;
+
+    function fetchFilteredUsers() {
+    let fetchUrl = `/fetch_users?`;
+    const params = new URLSearchParams();
+    if (activeServiceId) params.append('service_id', activeServiceId);
+    if (activeRegionId) params.append('region_id', activeRegionId);
+    fetchUrl += params.toString();
+    console.log(fetchUrl); // Debug: Log the constructed URL
+
+    fetch(fetchUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            servicesContainer.innerHTML = ''; // Clear previous services
+            if (data.length) {
+                data.forEach(user => {
+                    const userCard = document.createElement('div');
+                    userCard.className = 'service-card';
+
+                    let stars = '';
+                    let avgRatingInt = Math.floor(user.avg_rating);
+                    for (let i = 0; i < avgRatingInt; i++) {
+                        stars += '<span class="star">&#9733;</span>';
+                    }
+                    for (let i = avgRatingInt; i < 5; i++) {
+                        stars += '<span class="star">&#9734;</span>';
+                    }
+
+                    userCard.innerHTML = `
+                        <h3>${user.Fullname}</h3>
+                        <div class="rating">
+                            ${stars}
+                        </div>
+                        <a href="/public_profile/${user.id}" class="profile-btn">View Profile</a>
+                    `;
+                    servicesContainer.appendChild(userCard);
+                });
+            } else {
+                servicesContainer.innerHTML = '<p>No users available for this filter.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching users:', error);
+            alert('Failed to fetch users: ' + error.message);
+        });
+}
+
+    serviceLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            activeServiceId = link.getAttribute('href').split('/').pop();
+            fetchFilteredUsers();
+        });
+    });
+
+    regionLinks.forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            activeRegionId = link.getAttribute('data-region');
+            fetchFilteredUsers();
+        });
+    });
+});
+  
+       </script>
+        
+{% endblock %}

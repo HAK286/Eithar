@@ -1,0 +1,205 @@
+{% extends 'lay.html' %}
+
+{% block title %} How It Works {% endblock %}
+
+{% block content %}
+<div class="frame" id="frame1">
+    <div class="header">
+        <h1 class="main-heading">Choose from many services</h1>
+        <p>On Eithar, you can exchange help directly with other members.</p>
+        <div class="button-wrapper">
+            <button class="cta-button" onclick="navigateToServices()">See All Services</button>
+        </div>
+    </div>
+</div>
+
+<div class="frame" id="frame2">
+    <div class="section">
+        <div class="text-content">
+            <h2 class="sub-heading">Offer what you love</h2>
+            <p class="sub-description">Our community provides a unique way to share your hobbies, skills, and talents by offering services that genuinely bring you joy.</p>
+            <img src="{{ url_for('static', filename='guitarist.png') }}" alt="Person playing guitar" class="illustration">
+        </div>
+        <div class="illustrations">
+            <img src="{{ url_for('static', filename='skateboarder.png') }}" alt="Person skateboarding" class="illustration">
+        </div>
+    </div>
+</div>
+
+<div class="frame" id="frame3">
+    <div class="section">
+        <div class="text-content">
+            <h2 class="final-heading">Engage and Exchange!</h2>
+            <div class="rectangle"></div>
+            <p class="final-description">Connect with the Eithar community and start meaningful exchanges. Whether you're offering or requesting a service, every conversation builds trust, skill-sharing, and mutual support. Don’t see an immediate fit? Earn time credits now and choose a service whenever you need! With every exchange, our community grows stronger.</p>
+            
+        </div>
+        <div class="illustrations">
+            <img src="{{ url_for('static', filename='conver.png') }}" alt="Characters having a conversation" class="illustration-large">
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+        background-color: #F4F2EC;
+    }
+
+    .frame {
+        min-height: 100vh;
+        padding: 32px; /* 4-point grid spacing */
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .header, .section {
+        width: 100%;
+        max-width: 1200px;
+    }
+
+    .main-heading {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 900;
+        font-size: 64px;
+        line-height: 80px;
+        color: #221F20;
+        margin-bottom: 24px; /* 4-point grid spacing */
+        text-align: center;
+    }
+
+    .header p {
+        font-size: 20px;
+        color: #555;
+        margin: 16px 0; /* 4-point grid spacing */
+        text-align: center;
+    }
+
+    .button-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 16px; /* 4-point grid spacing */
+    }
+
+    .cta-button {
+        background-color: #00613a;
+        color: white;
+        border: none;
+        padding: 12px 24px; /* 4-point grid spacing */
+        font-size: 1em;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .cta-button:hover {
+        background-color: #e55a00;
+    }
+
+    .sub-heading {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 900;
+        font-size: 64px;
+        line-height: 80px;
+        color: #221F20;
+        margin-bottom: 24px; /* 4-point grid spacing */
+        text-align: left;
+    }
+
+    .sub-description {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 32px;
+        color: #221F20;
+        width: 587px;
+        height: 58px;
+        margin-bottom: 32px; /* 4-point grid spacing */
+        text-align: left;
+    }
+
+    .text-content {
+        flex: 1;
+        padding-right: 32px; /* 4-point grid spacing */
+    }
+
+    .illustrations {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 24px; /* 4-point grid spacing */
+    }
+
+    .illustration {
+        width: 375px;
+        height: 375px;
+        margin-bottom: 32px; /* 4-point grid spacing */
+    }
+
+    .final-heading {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 900;
+        font-size: 40px;
+        line-height: 56px;
+        color: #221F20;
+        margin-bottom: 16px; /* 4-point grid spacing */
+        text-align: left;
+    }
+
+    .rectangle {
+        width: 120px;
+        height: 2px;
+        background: #221F20;
+        margin-bottom: 16px; /* 4-point grid spacing */
+    }
+
+    .final-description {
+        font-family: 'Inter', sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 19px;
+        line-height: 32px;
+        color: #221F20;
+        margin-bottom: 16px; /* 4-point grid spacing */
+        text-align: left;
+        width: 100%;
+    }
+
+    .illustration-large {
+        width: 565px;
+        height: 670px;
+    }
+
+    #frame1, #frame2, #frame3 {
+        background-color: #f4f2ec; /* Unified background color */
+    }
+
+    #frame2 .section, #frame3 .section {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        text-align: left; /* Align text to the left */
+    }
+
+    #frame3 .illustrations {
+        margin-left: 32px; /* 4-point grid spacing */
+    }
+</style>
+
+
+<script>
+    function navigateToServices() {
+        window.location.href = "{{ url_for('Services') }}";
+    }
+</script>
+
+{% endblock %}
+
